@@ -24,17 +24,17 @@ class SquibGenerator:
         return False
 
     def construct_common_squib(self, part_idxs):
-        squib = Image.new("RGB", (420, 420))
+        # squib = Image.new("RGBA", (420, 420))
+        squib = Image.open(os.path.join("squibs", "straight_squib", "body.png")).convert("RGBA")
         for i, part_idx in enumerate(part_idxs):
             part_name = list(self.common_registry)[i]
             img_name = self.common_registry[part_name].get(part_idx)
-            print(f"{img_name=}")
             if img_name == None:
                 continue
-            img = Image.open(img_name)
-            squib.paste(im=img, box=(0, 0, 420, 420))
+            img = Image.open(img_name).convert("RGBA")
+            squib.paste(im=img, box=(0, 0, 420, 420), mask=img)
         output_file = f"{''.join([str(num) for num in part_idxs])}.png"
-        squib.save(os.path.join(self.output_path, output_file))
+        squib.save(os.path.join(self.output_path, output_file), format="png")
 
     def assemble_common(self):
         seen = set()
@@ -42,7 +42,7 @@ class SquibGenerator:
         count = 0
         while nodes: 
             cur = nodes.pop()
-            print(f"{cur=}")
+            # print(f"{cur=}")
             self.construct_common_squib(cur)
             # we add a new one to nodes if 1. the index can support it and 2. it is not in seen
             for i, num in enumerate(cur):
@@ -53,6 +53,9 @@ class SquibGenerator:
                     if next_node not in seen:
                         nodes.append(next_node)
                         seen.add(next_node)
+            count += 1
+            if count == 20:
+                break
         print(f"{count} squibs generated.")
 
         # for root, dirs, files in os.walk(os.path.join("squibs", self.orientation)):

@@ -14,9 +14,8 @@ class SquibPart:
 
     def get(self, idx):
         if idx >= self.dir_size:
-            logging.warning(f"'get' called in SquibPart with idx {idx} when dir size is {self.dir_size}.")
-            return None
+            raise IndexError(f"Index {idx} requested in squib directory {self.path_to_dir} which only has size {self.dir_size}.")
         file_name = os.listdir(self.path_to_dir)[idx]
         if file_name[0] == ".":
-            return None
+            raise Exception(f"Invalid file '{file_name}' exists in squib directory {self.path_to_dir}.")
         return os.path.join(self.path_to_dir, file_name)

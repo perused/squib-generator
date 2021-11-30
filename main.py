@@ -4,11 +4,8 @@ import os
 
 
 def main():
-    """
-    Generate the squibs from supplied squib images.
-    :return: None
-    :rtype: None
-    """
+    """Oversee the generation of different rarity squibs from supplied squib images."""
+    # TODO: create registry system for varying rarities
     common_registry = {
         "eyes": SquibPart(os.path.join("squibs", "straight_squib", "eyes")),
         "mouth": SquibPart(os.path.join("squibs", "straight_squib", "mouth")),

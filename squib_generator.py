@@ -1,12 +1,7 @@
-from PIL import Image
+from PIL import Image, ImageDraw, ImageFont
 import os
 
 orientation_dict = {"straight": "straight_squib", "left": "left_squib", "right": "right_squib"}
-# common = ["eyes", "mouth", "left_arm", "right_arm", "left_leg", "right_leg", "shadow"]
-# rare = []
-# ultra_rare = []
-# one_of_a_kind = []
-
 
 class SquibGenerator:
     """A class for assembling squibs of different rarities."""
@@ -15,14 +10,19 @@ class SquibGenerator:
         self.common_registry = common_registry
         self.output_path = os.path.join("generated", self.orientation)
 
+    def attach(self, img, file_name):
+        attacher = Image.open(file_name).convert("RGBA")
+        img.paste(im=attacher, box=(0, 0, 420, 420), mask=attacher)
+
     def construct_common_squib(self, part_idxs):
         """Given indexes referring to images in the squib directories, construct and save a generated squib."""
-        squib = Image.open(os.path.join("squibs", "straight_squib", "body.png")).convert("RGBA")
+        squib = Image.open(os.path.join("squibs", "white.png")).convert("RGBA")
+        self.attach(squib, os.path.join("squibs", "straight_squib", "body.png"))
+        self.attach(squib, os.path.join("squibs", "straight_squib", "bubble", "bubble.png"))
         for i, part_idx in enumerate(part_idxs):
             part_name = list(self.common_registry)[i]
             img_name = self.common_registry[part_name].get(part_idx)
-            img = Image.open(img_name).convert("RGBA")
-            squib.paste(im=img, box=(0, 0, 420, 420), mask=img)
+            self.attach(squib, img_name)
         output_file = f"{''.join([str(num) for num in part_idxs])}.png"
         squib.save(os.path.join(self.output_path, output_file), format="png")
 
@@ -30,10 +30,11 @@ class SquibGenerator:
     def assemble_common(self):
         """DFS of squib images to construct all possible combinations of common components."""
         seen = set()
-        nodes = [(0, 0, 0, 0, 0, 0, 0)]
+        nodes = [tuple([0]*len(self.common_registry))]
         count = 0
         while nodes: 
             cur = nodes.pop()
+            print(cur)
             self.construct_common_squib(cur)
             # we add a new one to nodes if 1. the index can support it and 2. it is not in seen
             for i, num in enumerate(cur):

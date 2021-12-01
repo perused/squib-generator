@@ -34,7 +34,6 @@ class SquibGenerator:
         count = 0
         while nodes: 
             cur = nodes.pop()
-            print(cur)
             self.construct_common_squib(cur)
             # we add a new one to nodes if 1. the index can support it and 2. it is not in seen
             for i, num in enumerate(cur):
@@ -46,6 +45,4 @@ class SquibGenerator:
                         nodes.append(next_node)
                         seen.add(next_node)
             count += 1
-            # if count == 20:
-            #     break
         print(f"{count} squibs generated.")
